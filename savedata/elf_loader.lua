@@ -1,8 +1,13 @@
 
 -- rudimentary elf loader
--- only expected to load john tornblom's elfldr.elf
-
 -- credit to nullptr for porting and specter for the original code
+
+
+options = {
+    elf_filename = "payload.elf",
+}
+
+
 
 elf_loader = {}
 elf_loader.__index = elf_loader
@@ -229,8 +234,8 @@ function main()
     })
 
     run_with_ps5_syscall_enabled(function()
-        local elfldr_data_path = "/data/elfldr.elf"
-        local elfldr_savedata_path = string.format("/mnt/sandbox/%s_000/savedata0/elfldr.elf", get_title_id())
+        local elfldr_data_path = "/data/" .. options.elf_filename
+        local elfldr_savedata_path = string.format("/mnt/sandbox/%s_000/savedata0/%s", get_title_id(), options.elf_filename)
 
         local existing_path = ""
         if file_exists(elfldr_data_path) then
@@ -240,7 +245,7 @@ function main()
         else
             errorf("file not exist: %s", existing_path)
         end
-        printf("loading elfldr from: %s", existing_path)
+        printf("loading %s from: %s", options.elf_filename, existing_path)
 
         local elf = elf_loader:load_from_file(existing_path)
         elf:run()

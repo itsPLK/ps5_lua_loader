@@ -1,7 +1,10 @@
 
-## Remote Lua Loader
+## PS5 Lua Autoloader
 
-Remote lua loader for PS4 and PS5, based on gezine's [finding](https://github.com/Gezine/ArtemisLuaLoader/) that allows games built with Artemis engine to load arbitrary lua file. This loader is not firmware dependant, and has been successfully tested on PS5 Pro 10.40.  
+Fork of [remote_lua_loader](remote_lua_loader)
+
+Instead of starting remote loader, it automatically loads umtx.lua and ELF payload of your choice
+
 
 Currently this loader is specific for the following list of games:
 
@@ -15,9 +18,9 @@ Currently this loader is specific for the following list of games:
 8. Nora Princess and Stray Cat Heart HD (CUSA13303) - Requires manual loading of savegame
    - Rename save9999.dat into nora_01.dat.
 
+
 For guide on how to setup this loader, please refer [SETUP.md](SETUP.md)
 
-This repo provides few [payloads](payloads/) for you to play around. PRs for useful payloads are welcomed
 
 ## Credits
 
