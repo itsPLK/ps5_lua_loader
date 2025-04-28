@@ -172,7 +172,10 @@ function main()
     local lua_umtx = load_file("/savedata0/umtx.lua")
     local lua_elf_loader = load_file("/savedata0/elf_loader.lua")
 
+    send_ps_notification("Loading UMTX")
     run_lua_code(lua_umtx, true)
+
+    send_ps_notification("Loading ELF")
     run_lua_code(lua_elf_loader, true)
 
     notify("PS5 Lua Autoloader v0.1")
