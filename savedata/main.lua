@@ -105,20 +105,6 @@ function run_lua_code(lua_code, is_local)
 end
 
 
-function load_file(file_path)
-    local file = io.open(file_path, "r")
-    if not file then
-        error("Error opening file: " .. filepath)
-    end
-    local lua_code = ""
-    for line in file:lines() do
-        lua_code = lua_code .. line .. "\n"
-    end
-    file:close()
-    return lua_code
-end
-
-
 function main()
 
     -- setup limited read & write primitives
@@ -169,8 +155,8 @@ function main()
 
     thread.init()
 
-    local lua_umtx = load_file("/savedata0/umtx.lua")
-    local lua_elf_loader = load_file("/savedata0/elf_loader.lua")
+    local lua_umtx = file_read("/savedata0/umtx.lua", "r")
+    local lua_elf_loader = file_read("/savedata0/elf_loader.lua", "r")
 
     send_ps_notification("Loading UMTX")
     run_lua_code(lua_umtx, true)
