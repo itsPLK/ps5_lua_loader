@@ -9,6 +9,8 @@ By default, `payload.elf` is the ELF loader.
 You can replace it with any ELF payload of your choice.  
 You can also place a `payload.elf` file in the `/data/` directory, which will take priority over the one in the savedata directory.
 
+Supports PS5 firmware 7.61 and below
+
 ---
 
 Currently this loader is specific for the following list of games:
