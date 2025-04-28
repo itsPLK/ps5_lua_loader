@@ -55,38 +55,23 @@ require "kernel_offset"
 require "kernel"
 require "gpu"
 
-function run_lua_code(lua_code, is_local)
-    if not is_local then
-        assert(client_fd)
-    end
+function run_lua_code(lua_code)
 
     local script, err = loadstring(lua_code)
     if err then
         local err_msg = "error loading script: " .. err
-        if client_fd then
-            syscall.write(client_fd, err_msg, #err_msg)
-        else
-            print(err_msg)
-        end
+        print(err_msg)
         return
     end
 
     local env = {
         print = function(...)
             local out = prepare_arguments(...) .. "\n"
-            if client_fd then
-                syscall.write(client_fd, out, #out)
-            else
-                print(out)
-            end
+            print(out)
         end,
         printf = function(fmt, ...)
             local out = string.format(fmt, ...) .. "\n"
-            if client_fd then
-                syscall.write(client_fd, out, #out)
-            else
-                print(out)
-            end
+            print(out)
         end
     }
 
@@ -96,11 +81,7 @@ function run_lua_code(lua_code, is_local)
     err = run_with_coroutine(script)
 
     if err then
-        if client_fd then
-            syscall.write(client_fd, err, #err)
-        else
-            print("Error: " .. err)
-        end
+        print("Error: " .. err)
     end
 end
 
@@ -155,16 +136,23 @@ function main()
 
     thread.init()
 
+    send_ps_notification(string.format("PS5 Lua Autoloader v0.1a \n %s %s", PLATFORM, FW_VERSION))
+
+    if PLATFORM ~= "ps5" or tonumber(FW_VERSION) < 2 or tonumber(FW_VERSION) > 7.61 then
+        notify(string.format("this only works on ps5 (2.00 <= fw <= 7.61) (current %s %s)", PLATFORM, FW_VERSION))
+        return
+    end
+
     local lua_umtx = file_read("/savedata0/umtx.lua", "r")
     local lua_elf_loader = file_read("/savedata0/elf_loader.lua", "r")
 
     send_ps_notification("Loading UMTX")
-    run_lua_code(lua_umtx, true)
+    run_lua_code(lua_umtx)
 
     send_ps_notification("Loading ELF")
-    run_lua_code(lua_elf_loader, true)
+    run_lua_code(lua_elf_loader)
 
-    notify("PS5 Lua Autoloader v0.1")
+    notify("Done")
 
     sleep(10000000)
 end
