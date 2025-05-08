@@ -15,15 +15,15 @@ force_kdata_patch_with_gpu = false
 
 umtx.config = {
     max_attempt = 100,
-    max_race_attempt = 0x100,
-    num_spray_fds = 0x28,
-    num_kprim_threads = 0x180,
+    max_race_attempt = 0x60,
+    num_spray_fds = 0x22,
+    num_kprim_threads = 0x100,
 }
 
 umtx.thread_config = {
-    main_thread = { core = 0, prio = 256 },
-    destroyer_thread = { core = {1, 2}, prio = 256 },
-    lookup_thread = { core = 4, prio = 400 },
+    main_thread = { core = 11, prio = 256 },
+    destroyer_thread = { core = {13, 14}, prio = 256 },
+    lookup_thread = { core = 15, prio = 400 },
     reclaim_thread = { core = -1, prio = 450 }
 }
 
@@ -1366,6 +1366,7 @@ function setup_kernel_rw()
             memory.write_qword(umtx.data.kprim.exit_signal, 1)
             wait_for(umtx.data.kprim.exited_count, umtx.config.num_kprim_threads)
         end
+        sleep(200 * i, "ms")
     end
 
     return umtx.data.kstack
