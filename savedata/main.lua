@@ -51,7 +51,6 @@ require "kernel_offset"
 require "kernel"
 require "gpu"
 
-
 function run_lua_code(lua_code)
     local script, err = loadstring(lua_code)
     if err then
@@ -81,6 +80,30 @@ function run_lua_code(lua_code)
     end
 end
 
+function get_savedata_path()
+    local path = "/savedata0/"
+    if is_jailbroken() then
+        path = "/mnt/sandbox/" .. get_title_id() .. "_000/savedata0/"
+    end
+    return path
+end
+
+function load_and_run_lua(path)
+    local lua_code = file_read(path, "r")
+    run_lua_code(lua_code)
+end
+
+elf_loader_active = false
+function start_elf_loader()
+    if elf_loader_active then
+        print("elf_loader already loaded")
+        return
+    end
+
+    load_and_run_lua(get_savedata_path() .. "elf_loader.lua")
+    sleep(4000, "ms")
+    elf_loader_active = true
+end
 
 function main()
 
@@ -126,21 +149,22 @@ function main()
 
     thread.init()
 
-    send_ps_notification(string.format("PS5 Lua Loader v0.4 \n %s %s", PLATFORM, FW_VERSION))
+    send_ps_notification(string.format("PS5 Lua Loader v0.5 \n %s %s", PLATFORM, FW_VERSION))
 
-    if PLATFORM ~= "ps5" or tonumber(FW_VERSION) < 2 or tonumber(FW_VERSION) > 7.61 then
-        notify(string.format("this only works on ps5 (2.00 <= fw <= 7.61) (current %s %s)", PLATFORM, FW_VERSION))
+    if PLATFORM ~= "ps5" then
+        notify(string.format("This only works on ps5 (current %s %s)", PLATFORM, FW_VERSION))
         return
     end
 
-    local lua_umtx = file_read("/savedata0/umtx.lua", "r")
-    local lua_elf_loader = file_read("/savedata0/elf_loader.lua", "r")
-    local lua_elf_sender = file_read("/savedata0/elf_sender.lua", "r")
+    if tonumber(FW_VERSION) >= 2.00 and tonumber(FW_VERSION) <= 7.61 then
+        kernel_exploit_lua = "umtx.lua"
+    else
+        notify(string.format("Unsupported firmware version (%s %s)", PLATFORM, FW_VERSION))
+        return
+    end
 
-    run_lua_code(lua_umtx)
-    run_lua_code(lua_elf_loader)
-    sleep(3000, "ms")
-    run_lua_code(lua_elf_sender)
+    load_and_run_lua(get_savedata_path() .. kernel_exploit_lua)
+    load_and_run_lua(get_savedata_path() .. "autoload.lua")
 
     notify("Done")
 end

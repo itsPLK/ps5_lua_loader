@@ -1,17 +1,19 @@
 #
-# ELF autoload config file
+# ps5_lua_loader
+# autoload config file
 # -------------------------
-#
-# Loader looks for this config file (ps5_lua_loader/autoload.txt) in this priority order:
+# Loader looks for this config file (ps5_lua_loader/autoload.txt) in the following directories (highest priority first):
 # - USB drives,
 # - /data directory,
-# - lua game savedata directory.
+# - Lua game savedata directory.
+# Only the first autoload.txt found will be used; subsequent files will be ignored.
 #
-# This file should contain the names of ELF payloads that need to be sent.
-# (one ELF file name per line)
+# This file should contain the names of ELF payloads (.elf or .bin) and Lua scripts (.lua) to be loaded.
+# (one file name per line)
+# ELF files will be sent to elf_loader. Lua scripts will be executed synchronously.
 # Lines starting with ! will be treated as sleep commands (e.g., !1000 will sleep for 1000ms).
 #
-# Don't include elf_loader payload here!
+# umtx.lua and elf_loader will be started automatically and shouldn't be included here.
 #
 
 
