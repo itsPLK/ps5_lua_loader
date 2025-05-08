@@ -3,15 +3,16 @@
 
 Fork of [remote_lua_loader](https://github.com/shahrilnet/remote_lua_loader)
 
-Automatically loads UMTX, ELF Loader, and your ELF payloads.
-Supports PS5 firmware up to 7.61.
+Automatically loads umtx kernel exploit, elfloader, your elf payloads, and Lua scripts.
+Supports PS5 firmwares up to 7.61.
 
 ## How to use
 * Create a directory named `ps5_lua_loader`.
-* Inside this directory, place your ELF payloads and an `autoload.txt` file.
-    * In `autoload.txt`, list the ELF filenames you want to load (one per line).  
-      Filenames are case-sensitive - make sure the names exactly match your ELF files.
+* Inside this directory, place your .elf/.bin/.lua files, and an `autoload.txt` file.
+    * In autoload.txt, list the files you want to load (one per line).
+    * Filenames are case-sensitive - make sure the names exactly match your files.
     * You can add lines like `!1000` to make the loader wait 1000ms before sending the next payload.
+    * Note: Do not put kernel exploit (e.g. `umtx.lua`) or elfloader in `autoload.txt`, as they are loaded automatically.
 * Put the `ps5_lua_loader` directory in one of these locations:
     * In the root of a USB drive
     * In the internal drive at `/data/ps5_lua_loader`
@@ -24,7 +25,7 @@ Supports PS5 firmware up to 7.61.
 
 Currently this loader is compatible with the following games:
   
-| Game Title                            | CUSA ID     | Notes                                                                           |
+| Game Title                            | TITLE ID    | Notes                                                                           |
 |---------------------------------------|-------------|---------------------------------------------------------------------------------|
 | Raspberry Cube                        | CUSA16074   |                                                                                 |
 | Aibeya                                | CUSA17068   |                                                                                 |
@@ -42,7 +43,7 @@ Currently this loader is compatible with the following games:
 * flatz - for sharing ideas and lua implementations
 * null_ptr - for helping to develop umtx exploit for PS5 & numerous helps with the loader development
 * gezine - for sharing the vulnerable games & ideas
-* specter & chendo - for webkit implementations which i refer a lot
+* specter & chendo - for webkit implementations referenced a lot
 * al-azif - parts and information grabbed from his sdk, aswell as from his ftp server
 * horror - for the notification popup and ftp server payloads
 * everyone else who shared their knowledge with the community
