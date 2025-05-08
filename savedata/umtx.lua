@@ -1355,10 +1355,12 @@ function setup_kernel_rw()
         if umtx.race() then
 
             if umtx.reclaim_kernel_stack() then
+                send_ps_notification("race won")
                 print("kstack successfully reclaimed")
                 break
             end
 
+            send_ps_notification("race lost")
             -- ask all kprim to exit if not yet win
             print("waiting all kprim threads to exit...")
             memory.write_qword(umtx.data.kprim.exit_signal, 1)
@@ -1380,21 +1382,28 @@ function print_info()
     dbgf("libc base @ %s", hex(libc_base))
     dbgf("libkernel base @ %s\n", hex(libkernel_base))
 
+
+    local notification_txt = "exploit config:\n"
     print("exploit config:")
     for k,v in pairs(umtx.config) do
         printf("%s = %s", k, (v))
+        notification_txt = notification_txt .. string.format("%s = %s\n", k, (v))
     end
 
+    notification_txt = notification_txt .. "thread config:\n"
     print("\nthread config:")
     for k,v in pairs(umtx.thread_config) do
         local core = v.core
         local prio = v.prio
         if k == "destroyer_thread" then
             printf("%s = core %d,%d prio %d", k, core[1], core[2], prio)
+            notification_txt = notification_txt .. string.format("%s = core %d,%d prio %d\n", k, core[1], core[2], prio)
         else
             printf("%s = core %d prio %d", k, core, prio)
+            notification_txt = notification_txt .. string.format("%s = core %d prio %d\n", k, core, prio)
         end
     end
+    send_ps_notification(notification_txt)
 
 end
 
