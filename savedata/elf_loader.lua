@@ -5,11 +5,10 @@
 -- credit to nullptr for porting and specter for the original code
 
 
-
 options = {
+    elf_dirname = "ps5_lua_loader", -- directory where elfldr.elf is located
     elf_filename = "elfldr.elf",
 }
-
 
 
 elf_loader = {}
@@ -236,15 +235,17 @@ function main()
     })
 
     run_with_ps5_syscall_enabled(function()
+        local elf_dirname = options.elf_dirname
         local elf_filename = options.elf_filename
 
         -- Build possible paths, prioritizing USBs first, then /data, then savedata
         local possible_paths = {}
         for i = 0, 7 do
-            table.insert(possible_paths, string.format("/mnt/usb%d/%s", i, elf_filename))
+            table.insert(possible_paths, string.format("/mnt/usb%d/%s/%s", i, elf_dirname, elf_filename))
         end
-        table.insert(possible_paths, "/data/" .. elf_filename)
-        table.insert(possible_paths, string.format("/mnt/sandbox/%s_000/savedata0/%s", get_title_id(), elf_filename))
+        table.insert(possible_paths, string.format("/data/%s/%s", elf_dirname, elf_filename))
+        table.insert(possible_paths, get_savedata_path() .. elf_dirname .. "/" .. elf_filename)
+        table.insert(possible_paths, get_savedata_path() .. elf_filename)
 
         local existing_path = nil
         for _, path in ipairs(possible_paths) do
