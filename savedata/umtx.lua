@@ -109,6 +109,12 @@ function dbgf(...)
     end
 end
 
+function dbgn(s)
+    if debug then
+        send_ps_notification(s)
+    end
+end
+
 function calculate_shifts(n)
     return math.floor(math.log(n) / math.log(2))
 end
@@ -1359,12 +1365,12 @@ function setup_kernel_rw()
         if umtx.race() then
 
             if umtx.reclaim_kernel_stack() then
-                send_ps_notification("race won")
+                dbgn("race won")
                 print("kstack successfully reclaimed")
                 break
             end
 
-            send_ps_notification("race lost")
+            dbgn("race lost")
             -- ask all kprim to exit if not yet win
             print("waiting all kprim threads to exit...")
             memory.write_qword(umtx.data.kprim.exit_signal, 1)
@@ -1417,7 +1423,7 @@ function print_info()
         notification_txt = notification_txt .. "unmap_kstack_on_fail=false\n"
     end
 
-    send_ps_notification(notification_txt)
+    dbgn(notification_txt)
 
 end
 
@@ -1503,6 +1509,7 @@ function main()
 
     if PLATFORM ~= "ps5" or tonumber(FW_VERSION) < 2 or tonumber(FW_VERSION) > 7.61 then
         printf("this exploit only works on ps5 (2.00 <= fw <= 7.61) (current %s %s)", PLATFORM, FW_VERSION)
+        send_ps_notification("this exploit only works on ps5 (2.00 <= fw <= 7.61)")
         return
     end
 
