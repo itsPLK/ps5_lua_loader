@@ -27,6 +27,8 @@ umtx.thread_config = {
     reclaim_thread = { core = -1, prio = 450 }
 }
 
+unmap_kstack_on_fail = true
+
 syscall.resolve({
     mprotect = 0x4a,
     dup2 = 0x5a,
@@ -911,11 +913,13 @@ function umtx.reclaim_kernel_stack()
         
         print("failed to access kstack. retry")
         
-        -- unmap failed allocation
-        -- todo: verify if this is required
-        -- if syscall.munmap(kstack, PAGE_SIZE):tonumber() == -1 then
-        --     print("munmap() error: " .. get_error_string())
-        -- end
+        if (unmap_kstack_on_fail) then
+            -- unmap failed allocation
+            print("unmapping kstack")
+            if syscall.munmap(kstack, PAGE_SIZE):tonumber() == -1 then
+                print("munmap() error: " .. get_error_string())
+            end
+        end
 
         return false
     end
@@ -1404,6 +1408,15 @@ function print_info()
             notification_txt = notification_txt .. string.format("%s = core %d prio %d\n", k, core, prio)
         end
     end
+
+    if (unmap_kstack_on_fail) then
+        print("unmap_kstack_on_fail=true")
+        notification_txt = notification_txt .. "unmap_kstack_on_fail=true\n"
+    else
+        print("unmap_kstack_on_fail=false")
+        notification_txt = notification_txt .. "unmap_kstack_on_fail=false\n"
+    end
+
     send_ps_notification(notification_txt)
 
 end
