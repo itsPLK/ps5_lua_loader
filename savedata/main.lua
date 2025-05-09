@@ -119,13 +119,13 @@ function main()
 
     print("[+] arbitrary r/w primitives achieved")
 
-    -- resolve required syscalls for remote lua loader
     syscall.resolve({
         read = 0x3,
         write = 0x4,
         open = 0x5,
         close = 0x6,
         getuid = 0x18,
+        kill = 0x25,
         accept = 0x1e,
         pipe = 0x2a,
         mprotect = 0x4a,
@@ -149,7 +149,7 @@ function main()
 
     thread.init()
 
-    send_ps_notification(string.format("PS5 Lua Loader v0.5 \n %s %s", PLATFORM, FW_VERSION))
+    send_ps_notification(string.format("PS5 Lua Loader v0.6 \n %s %s", PLATFORM, FW_VERSION))
 
     if PLATFORM ~= "ps5" then
         notify(string.format("This only works on ps5 (current %s %s)", PLATFORM, FW_VERSION))
@@ -166,7 +166,8 @@ function main()
     load_and_run_lua(get_savedata_path() .. kernel_exploit_lua)
     load_and_run_lua(get_savedata_path() .. "autoload.lua")
 
-    notify("Done")
+    send_ps_notification("PS5 Lua Loader finished!\n\nClosing game...")
+    syscall.kill(syscall.getpid(), 15)
 end
 
 function entry()
