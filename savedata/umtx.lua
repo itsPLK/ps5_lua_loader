@@ -1366,7 +1366,7 @@ function setup_kernel_rw()
             memory.write_qword(umtx.data.kprim.exit_signal, 1)
             wait_for(umtx.data.kprim.exited_count, umtx.config.num_kprim_threads)
         end
-        sleep(200 * i, "ms")
+        sleep(50 * i, "ms")
     end
 
     return umtx.data.kstack
