@@ -35,6 +35,7 @@ Currently this loader is compatible with the following games:
 | Aikagi 2                              | CUSA19556   |                                                                                 |
 | IxSHE Tell                            | CUSA17112   |                                                                                 |
 | Nora Princess and Stray Cat Heart HD  | CUSA13303   | Requires manual loading of savegame (rename `save9999.dat` to `nora_01.dat`)    |
+| Jinki Resurrection                    | CUSA25179   |                                                                                 |
 
 ## Credits
 
