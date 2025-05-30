@@ -107,6 +107,22 @@ function start_elf_loader()
     elf_loader_active = true
 end
 
+old_error = error
+function error(msg)
+    if type(msg) == "table" then
+        msg = table.concat(msg, "\n")
+    end
+
+    if not msg or msg == "" then
+        msg = "Unknown error"
+    end
+
+    send_ps_notification("Error:\n" .. msg)
+
+    old_error(msg)
+end
+
+
 function main()
 
     -- setup limited read & write primitives
