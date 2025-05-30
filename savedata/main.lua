@@ -1,4 +1,6 @@
 
+FORCE_LAPSE_EXPLOIT = false
+
 WRITABLE_PATH = "/av_contents/content_tmp/"
 LOG_FILE = WRITABLE_PATH .. "loader_log.txt"
 log_fd = io.open(LOG_FILE, "w")
@@ -151,13 +153,18 @@ function main()
 
     send_ps_notification(string.format("PS5 Lua Loader v0.6 \n %s %s", PLATFORM, FW_VERSION))
 
+
     if PLATFORM ~= "ps5" then
         notify(string.format("This only works on ps5 (current %s %s)", PLATFORM, FW_VERSION))
         return
     end
 
-    if tonumber(FW_VERSION) >= 2.00 and tonumber(FW_VERSION) <= 7.61 then
+    if FORCE_LAPSE_EXPLOIT then
+        kernel_exploit_lua = "lapse.lua"
+    elseif tonumber(FW_VERSION) <= 7.61 then
         kernel_exploit_lua = "umtx.lua"
+    elseif tonumber(FW_VERSION) <= 10.01 then
+        kernel_exploit_lua = "lapse.lua"
     else
         notify(string.format("Unsupported firmware version (%s %s)", PLATFORM, FW_VERSION))
         return
