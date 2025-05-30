@@ -1,5 +1,5 @@
 
-FORCE_LAPSE_EXPLOIT = false
+FORCE_LAPSE_EXPLOIT = true
 
 WRITABLE_PATH = "/av_contents/content_tmp/"
 LOG_FILE = WRITABLE_PATH .. "loader_log.txt"
@@ -151,7 +151,9 @@ function main()
 
     thread.init()
 
-    send_ps_notification(string.format("PS5 Lua Loader v0.6 \n %s %s", PLATFORM, FW_VERSION))
+    kernel_offset = get_kernel_offset()
+
+    send_ps_notification(string.format("PS5 Lua Loader v0.7-TESTING \n %s %s", PLATFORM, FW_VERSION))
 
 
     if PLATFORM ~= "ps5" then
@@ -171,6 +173,12 @@ function main()
     end
 
     load_and_run_lua(get_savedata_path() .. kernel_exploit_lua)
+
+    if not is_jailbroken() then
+        send_ps_notification("Jailbreak failed")
+        return
+    end
+
     load_and_run_lua(get_savedata_path() .. "autoload.lua")
 
     send_ps_notification("PS5 Lua Loader finished!\n\nClosing game...")
