@@ -873,12 +873,14 @@ function double_free_reqs2(sds)
         syscall.close(sd_conn)
 
         if res then
+            send_ps_notification("won race at attempt " .. i)
             printf("won race at attempt %d", i)
             syscall.close(sd_listen)
             return res
         end
     end
 
+    send_ps_notification("failed aio double free")
     error("failed aio double free")
 end
 
@@ -1642,6 +1644,7 @@ function post_exploitation_ps5()
 
     -- if we havent found allproc, assume we havent found every kernel offsets yet for this fw
     if not kernel_offset.DATA_BASE_ALLPROC then
+        send_ps_notification("fw not yet supported for jailbreaking")
         printf("fw not yet supported for jailbreaking")
         return
     end
@@ -1762,6 +1765,8 @@ function post_exploitation_ps5()
 
         printf("we root now? uid: before %d after %d", uid_before, uid_after)
         printf("we escaped now? in sandbox: before %d after %d", in_sandbox_before, in_sandbox_after)
+        send_ps_notification("root before:" .. uid_before .. " after: " .. uid_after .. "\n" ..
+                             "sandbox before:" .. in_sandbox_before .. " after: " .. in_sandbox_after)
     end
 
     local function apply_patches_to_kernel_data(accessor)
@@ -1898,6 +1903,7 @@ function kexploit()
 
         print("exploit state is saved into storage")
         print("done!")
+        send_ps_notification("exploit done!")
     end)
 
     if err then
