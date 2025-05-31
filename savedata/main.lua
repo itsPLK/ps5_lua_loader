@@ -1,5 +1,5 @@
 
-FORCE_LAPSE_EXPLOIT = true
+FORCE_LAPSE_EXPLOIT = false
 
 WRITABLE_PATH = "/av_contents/content_tmp/"
 LOG_FILE = WRITABLE_PATH .. "loader_log.txt"
@@ -181,7 +181,7 @@ function main()
         kernel_exploit_lua = "lapse.lua"
     elseif tonumber(FW_VERSION) <= 7.61 then
         kernel_exploit_lua = "umtx.lua"
-    elseif tonumber(FW_VERSION) <= 10.01 then
+    elseif tonumber(FW_VERSION) <= 8.00 then
         kernel_exploit_lua = "lapse.lua"
     else
         notify(string.format("Unsupported firmware version (%s %s)", PLATFORM, FW_VERSION))
@@ -191,7 +191,8 @@ function main()
     load_and_run_lua(get_savedata_path() .. kernel_exploit_lua)
 
     if not is_jailbroken() then
-        send_ps_notification("Jailbreak failed")
+        send_ps_notification("Jailbreak failed\nClosing game...")
+        syscall.kill(syscall.getpid(), 15)
         return
     end
 
