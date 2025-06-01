@@ -1,29 +1,41 @@
-local config_path = "/data/config.txt"
+local config_path = "/av_contents/content_tmp/config.txt"
+
+-- Check if the file exists
+local file = io.open(config_path, "r")
+if not file then
+    -- Generate a random number 1 or 2
+    math.randomseed(os.time())
+    local initial_value = tostring(math.random(1, 2))
+
+    -- Create file with random value
+    local new_file = io.open(config_path, "w")
+    if new_file then
+        new_file:write(initial_value)
+        new_file:close()
+        notify("Created config.txt with a random value: " .. initial_value)
+    else
+        notify("Failed to create config.txt")
+        return
+    end
+else
+    file:close()
+end
 
 -- Read the present value
-local file = io.open(config_path, "r")
+file = io.open(config_path, "r")
 local current = file and file:read("*l") or "1"
 if file then file:close() end
 
--- Convert to number if possible
+-- Convert value to number
 local choice = tonumber(current) or 1
 
--- Switch: if 1 → 2, if 2 → 1, else 1
-local next_choice = (choice == 1) and 2 or 1
-
--- Write the following option
-local file_out = io.open(config_path, "w")
-if file_out then
-    file_out:write(tostring(next_choice))
-    file_out:close()
-end
--- Display and play by current value (which we read)
+-- Execute file based on value
 if choice == 1 then
-    notify("Selected RemoteLuaLoader — Running now")
+    notify("▶️ Running RemoteLuaLoader (1)")
     dofile("/savedata0/main_remote.lua")
 elseif choice == 2 then
-    notify("Selected itsPLK — Running now")
+    notify("▶️ Running itsPLK (2)")
     dofile("/savedata0/main_plk.lua")
 else
-    notify("Invalid option in config.txt")
+    notify("❌ Invalid config.txt value")
 end
