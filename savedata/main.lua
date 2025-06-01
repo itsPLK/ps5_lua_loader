@@ -1,24 +1,24 @@
 local config_path = "/data/config.txt"
 
--- قراءة القيمة الحالية
+-- Read the present value
 local file = io.open(config_path, "r")
 local current = file and file:read("*l") or "1"
 if file then file:close() end
 
--- تحويل إلى رقم إن أمكن
+-- Convert to number if possible
 local choice = tonumber(current) or 1
 
--- التبديل: إذا 1 → 2، إذا 2 → 1، وإلا 1
+-- Switch: if 1 → 2, if 2 → 1, else 1
 local next_choice = (choice == 1) and 2 or 1
 
--- كتابة الخيار التالي
+-- Write the following option
 local file_out = io.open(config_path, "w")
 if file_out then
     file_out:write(tostring(next_choice))
     file_out:close()
 end
 
--- عرض وتشغيل حسب القيمة الحالية (التي قرأناها)
+-- Display and play by current value (which we read)
 if choice == 1 then
     notify("Selected RemoteLuaLoader — Running now")
     dofile("/savedata0/main_remote.lua")
