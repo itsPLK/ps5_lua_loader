@@ -1,6 +1,10 @@
 
 ## PS5 Lua Loader
 
+Added activation of Remote Lua Loader
+If you return to the game again, itsPLK will be activated
+
+
 Fork of [remote_lua_loader](https://github.com/shahrilnet/remote_lua_loader)
 
 Automatically loads umtx kernel exploit, elfloader, your elf payloads, and Lua scripts.
