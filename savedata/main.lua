@@ -17,7 +17,6 @@ if file_out then
     file_out:write(tostring(next_choice))
     file_out:close()
 end
-
 -- Display and play by current value (which we read)
 if choice == 1 then
     notify("Selected RemoteLuaLoader — Running now")
