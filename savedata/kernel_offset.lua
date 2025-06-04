@@ -254,7 +254,8 @@ ps5_kernel_offset_list = {
         PMAP_STORE_DMPDPI = nil,
     },
 	
-	[{ "10.20", "10.40", "10.60" }] = {
+    [{ "10.20", "10.40", "10.60" }] = {
+		
         DATA_BASE = 0xCB0000,
         DATA_SIZE = 0x1D58E00,
 		
