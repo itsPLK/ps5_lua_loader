@@ -473,7 +473,6 @@ function find_additional_offsets()
         VMSPACE_VM_VMID = vm_map_vmid_offset,
     }
 end
-
 -- compatibility layer so ppl using older umtx payload can still work
 function initialize_kernel_offsets()
     update_kernel_offsets()
