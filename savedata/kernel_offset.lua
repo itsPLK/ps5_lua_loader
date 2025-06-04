@@ -195,7 +195,7 @@ ps5_kernel_offset_list = {
         PMAP_STORE_DMPDPI = nil,
     },
 
-    [{ "9.00", "9.05", "9.20", "9.40", "9.60" }] = {
+    [{ "9.00" }] = {
 
         DATA_BASE = 0xC90000,
         DATA_SIZE = nil,
@@ -204,6 +204,26 @@ ps5_kernel_offset_list = {
         DATA_BASE_TO_DYNAMIC = nil,
         DATA_BASE_ALLPROC = 0x2765D50,
         DATA_BASE_SECURITY_FLAGS = 0xD82064,
+        DATA_BASE_ROOTVNODE = 0x2FEB510,
+        DATA_BASE_KERNEL_PMAP_STORE = 0x2D38B78,
+        DATA_BASE_DATA_CAVE = nil,
+        DATA_BASE_GVMSPACE = 0x2D9A570,
+
+        PMAP_STORE_PML4PML4I = nil,
+        PMAP_STORE_DMPML4I = nil,
+        PMAP_STORE_DMPDPI = nil,
+
+    },
+
+    [{ "9.05", "9.20", "9.40", "9.60" }] = {
+
+        DATA_BASE = 0xC90000,
+        DATA_SIZE = nil,
+
+        DATA_BASE_DYNAMIC = 0x10000,
+        DATA_BASE_TO_DYNAMIC = nil,
+        DATA_BASE_ALLPROC = 0x2765D50,
+        DATA_BASE_SECURITY_FLAGS = 0xD83064,
         DATA_BASE_ROOTVNODE = 0x2FEB510,
         DATA_BASE_KERNEL_PMAP_STORE = 0x2D38B78,
         DATA_BASE_DATA_CAVE = nil,
@@ -233,6 +253,25 @@ ps5_kernel_offset_list = {
         PMAP_STORE_DMPML4I = nil,
         PMAP_STORE_DMPDPI = nil,
     },
+	
+	[{ "10.20", "10.40", "10.60" }] = {
+        DATA_BASE = 0xCB0000,
+        DATA_SIZE = 0x1D58E00,
+		
+        DATA_BASE_DYNAMIC = 0x00010000,
+        DATA_BASE_TO_DYNAMIC = nil,
+        DATA_BASE_ALLPROC = 0x2775D70,
+        DATA_BASE_SECURITY_FLAGS = 0xD89064,
+        DATA_BASE_ROOTVNODE = 0x2FB3510,
+        DATA_BASE_KERNEL_PMAP_STORE = 0x2D00EF8,
+        DATA_BASE_DATA_CAVE = 0x050e1000,
+        DATA_BASE_GVMSPACE = 0x2D62570,
+
+        PMAP_STORE_PML4PML4I = -0x105C,
+        PMAP_STORE_DMPML4I = 0x29C,
+        PMAP_STORE_DMPDPI = 0x2A0,
+    },
+
 }
 
 ps4_kernel_offset_list = {
