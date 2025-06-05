@@ -42,6 +42,7 @@ Currently this loader is compatible with the following games:
 | Nora Princess and Stray Cat Heart HD  | CUSA13303   | Requires manual loading of savegame (rename `save9999.dat` to `nora_01.dat`)    |
 | Jinki Resurrection                    | CUSA25179   |                                                                                 |
 | Jinki Resurrection Demo               | CUSA25180   | Requires latest firmware to download from PSN                                   |
+| FuyuKiss                              | CUSA29745   | savegame (rename `save9999.dat` to `save0001.dat`)                              |
 
 ## Credits
 
