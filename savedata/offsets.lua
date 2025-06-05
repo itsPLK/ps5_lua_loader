@@ -1,4 +1,3 @@
-
 games_identification = {
     [0xbb0] = "RaspberryCube",
     [0xb90] = "Aibeya",
