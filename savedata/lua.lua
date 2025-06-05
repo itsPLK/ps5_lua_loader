@@ -4,7 +4,6 @@
 --
 -- provide read and limited write primitives
 --
-
 lua_types = {
     LUA_TNIL = 0,
     LUA_TBOOLEAN = 1,
