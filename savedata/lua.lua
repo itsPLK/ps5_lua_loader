@@ -102,10 +102,13 @@ function lua.create_str_hacky(data)
     return str, addr
 end
 
+str_hacky_list = {}
+
 function lua.create_str(str)
     local addr = lua.addrof(str)
     if not addr then
         str, addr = lua.create_str_hacky(str)
+        table.insert(str_hacky_list, str)  -- prevent gc from freeing hacky str too soon
     end
     return str, addr+24
 end
@@ -200,6 +203,11 @@ function lua.resolve_game(luaB_auxwrap)
         eboot_addrofs = gadget_table.jinki_resurrection.eboot_addrofs
         libc_addrofs = gadget_table.jinki_resurrection.libc_addrofs
         gadgets = gadget_table.jinki_resurrection.gadgets
+    elseif game_name == "FuyuKiss" then
+        print("[+] Game identified as Fuyu Kiss")
+        eboot_addrofs = gadget_table.fuyu_kiss.eboot_addrofs
+        libc_addrofs = gadget_table.fuyu_kiss.libc_addrofs
+        gadgets = gadget_table.fuyu_kiss.gadgets
     end
 end
 
@@ -251,7 +259,7 @@ function lua.resolve_address()
     for k,offset in pairs(eboot_addrofs) do 
         eboot_addrofs[k] = eboot_base + offset 
     end
-
+	
     -- setup fake string that can read more memory space
     lua.setup_better_read_primitive()
 

@@ -1,4 +1,6 @@
 
+FORCE_LAPSE_EXPLOIT = false
+
 WRITABLE_PATH = "/av_contents/content_tmp/"
 LOG_FILE = WRITABLE_PATH .. "loader_log.txt"
 log_fd = io.open(LOG_FILE, "w")
@@ -105,6 +107,22 @@ function start_elf_loader()
     elf_loader_active = true
 end
 
+old_error = error
+function error(msg)
+    if type(msg) == "table" then
+        msg = table.concat(msg, "\n")
+    end
+
+    if not msg or msg == "" then
+        msg = "Unknown error"
+    end
+
+    send_ps_notification("Error:\n" .. msg)
+
+    old_error(msg)
+end
+
+
 function main()
 
     -- setup limited read & write primitives
@@ -149,21 +167,35 @@ function main()
 
     thread.init()
 
-    send_ps_notification(string.format("PS5 Lua Loader v0.6 \n %s %s", PLATFORM, FW_VERSION))
+    kernel_offset = get_kernel_offset()
+
+    send_ps_notification(string.format("PS5 Lua Loader v0.7 \n %s %s", PLATFORM, FW_VERSION))
+
 
     if PLATFORM ~= "ps5" then
         notify(string.format("This only works on ps5 (current %s %s)", PLATFORM, FW_VERSION))
         return
     end
 
-    if tonumber(FW_VERSION) >= 2.00 and tonumber(FW_VERSION) <= 7.61 then
+    if FORCE_LAPSE_EXPLOIT then
+        kernel_exploit_lua = "lapse.lua"
+    elseif tonumber(FW_VERSION) <= 7.61 then
         kernel_exploit_lua = "umtx.lua"
+    elseif tonumber(FW_VERSION) <= 10.01 then
+        kernel_exploit_lua = "lapse.lua"
     else
         notify(string.format("Unsupported firmware version (%s %s)", PLATFORM, FW_VERSION))
         return
     end
 
     load_and_run_lua(get_savedata_path() .. kernel_exploit_lua)
+
+    if not is_jailbroken() then
+        send_ps_notification("Jailbreak failed\nClosing game...")
+        syscall.kill(syscall.getpid(), 15)
+        return
+    end
+
     load_and_run_lua(get_savedata_path() .. "autoload.lua")
 
     send_ps_notification("PS5 Lua Loader finished!\n\nClosing game...")
