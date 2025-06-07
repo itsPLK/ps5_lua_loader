@@ -169,7 +169,7 @@ function main()
 
     kernel_offset = get_kernel_offset()
 
-    send_ps_notification(string.format("PS5 Lua Loader v0.7-TESTING \n %s %s", PLATFORM, FW_VERSION))
+    send_ps_notification(string.format("PS5 Lua Loader v0.7 \n %s %s", PLATFORM, FW_VERSION))
 
 
     if PLATFORM ~= "ps5" then
