@@ -13,9 +13,8 @@
 # ELF files will be sent to elf_loader. Lua scripts will be executed synchronously.
 # Lines starting with ! will be treated as sleep commands (e.g., !1000 will sleep for 1000ms).
 #
-# umtx.lua and elf_loader will be started automatically and shouldn't be included here.
+# kernel exploit and elf_loader will be started automatically and shouldn't be included here.
 #
 
 
-# john-tornblom's ftp server v0.11.3
-ftpsrv.elf
+ps5_lua_menu.lua
