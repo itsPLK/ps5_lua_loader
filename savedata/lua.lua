@@ -4,6 +4,7 @@
 --
 -- provide read and limited write primitives
 --
+
 lua_types = {
     LUA_TNIL = 0,
     LUA_TBOOLEAN = 1,
@@ -209,6 +210,11 @@ function lua.resolve_game(luaB_auxwrap)
         eboot_addrofs = gadget_table.fuyu_kiss.eboot_addrofs
         libc_addrofs = gadget_table.fuyu_kiss.libc_addrofs
         gadgets = gadget_table.fuyu_kiss.gadgets
+    elseif game_name == "Mikagami" then
+        print("[+] Game identified as Mikagami Sumika no Seifuku Katsudou")
+        eboot_addrofs = gadget_table.mikagami.eboot_addrofs
+        libc_addrofs = gadget_table.mikagami.libc_addrofs
+        gadgets = gadget_table.mikagami.gadgets		
     end
 end
 
