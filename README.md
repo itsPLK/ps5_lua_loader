@@ -4,7 +4,7 @@
 Fork of [remote_lua_loader](https://github.com/shahrilnet/remote_lua_loader)
 
 Automatically loads umtx kernel exploit, elfloader, your elf payloads, and Lua scripts.
-Supports PS5 firmwares up to 7.61.
+Supports PS5 firmwares up to 10.01 (above 7.61 uses [lapse exploit](https://github.com/shahrilnet/remote_lua_loader/blob/main/payloads/lapse.lua), which is currently unstable).
 
 ## How to use
 * Create a directory named `ps5_lua_loader`.

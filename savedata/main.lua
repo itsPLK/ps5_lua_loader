@@ -181,7 +181,7 @@ function main()
         kernel_exploit_lua = "lapse.lua"
     elseif tonumber(FW_VERSION) <= 7.61 then
         kernel_exploit_lua = "umtx.lua"
-    elseif tonumber(FW_VERSION) <= 8.00 then
+    elseif tonumber(FW_VERSION) <= 10.01 then
         kernel_exploit_lua = "lapse.lua"
     else
         notify(string.format("Unsupported firmware version (%s %s)", PLATFORM, FW_VERSION))
