@@ -39,7 +39,8 @@ Currently this loader is compatible with the following games:
 | Aikagi Kimi to Issho ni Pack          | CUSA16229   |                                                                                 |
 | Aikagi 2                              | CUSA19556   |                                                                                 |
 | IxSHE Tell                            | CUSA17112   |                                                                                 |
-| Nora Princess and Stray Cat Heart HD  | CUSA13303   | Requires manual loading of savegame (rename `save9999.dat` to `nora_01.dat`)    |
+| Nora Princess and Stray Cat Heart HD  | CUSA13303   | Requires manual loading of savegame (rename `save9999.dat` to `nora_01.dat`)
+| Nora Princess and Stray Cat Heart  2  | CUSA13586   | Requires manual loading of savegame (rename `save9999.dat` to `nora_01.dat`) |
 | Jinki Resurrection                    | CUSA25179   |                                                                                 |
 | Jinki Resurrection Demo               | CUSA25180   | Requires latest firmware to download from PSN                                   |
 | FuyuKiss                              | CUSA29745   | savegame (rename `save9999.dat` to `save0001.dat`)                              |
