@@ -45,6 +45,7 @@ Currently this loader is compatible with the following games:
 | Jinki Resurrection Demo               | CUSA25180   | Requires latest firmware to download from PSN                                   |
 | FuyuKiss                              | CUSA29745   | savegame (rename `save9999.dat` to `save0001.dat`)                              |
 | Mikagami                              | CUSA11481   | savegame      saveg.dat test                                                    |
+| SummerSurprise                        | CUSA18998   | savegame      saveg.dat test                                                    |
 
 ## Credits
 
