@@ -35,10 +35,13 @@ Currently this loader is compatible with the following games:
 | Aikagi 2                              | CUSA19556   |                                                                                 |
 | IxSHE Tell                            | CUSA17112   |                                                                                 |
 | IxSHE Tell Demo                       | CUSA17126   | Requires latest firmware to download from PSN                                   |
-| Nora Princess and Stray Cat Heart HD  | CUSA13303   | Requires manual loading of savegame (rename `save9999.dat` to `nora_01.dat`)    |
+| Nora Princess and Stray Cat Heart HD  | CUSA13303   |                                                                                 |
 | Jinki Resurrection                    | CUSA25179   |                                                                                 |
 | Jinki Resurrection Demo               | CUSA25180   | Requires latest firmware to download from PSN                                   |
 | Fuyu Kiss                             | CUSA29745   |                                                                                 |
+| Fuyu Kiss Demo                        | CUSA29746   | Requires latest firmware to download from PSN                                   |
+| Nora Princess and Crying Cat 2        | CUSA13586   |                                                                                 |
+
 
 ## Credits
 
