@@ -215,6 +215,11 @@ function lua.resolve_game(luaB_auxwrap)
         eboot_addrofs = gadget_table.mikagami.eboot_addrofs
         libc_addrofs = gadget_table.mikagami.libc_addrofs
         gadgets = gadget_table.mikagami.gadgets		
+    elseif game_name == "SummerSurprise" then
+        print("[+] Game identified as Tonari ni Kanojo no Iru Shiawase Summer Surprise")
+        eboot_addrofs = gadget_table.summer_surprise.eboot_addrofs
+        libc_addrofs = gadget_table.summer_surprise.libc_addrofs
+        gadgets = gadget_table.summer_surprise.gadgets
     end
 end
 

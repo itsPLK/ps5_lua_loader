@@ -10,9 +10,10 @@ games_identification = {
     [0xd80] = "IxSHETell",
     [0x660] = "NoraPrincess",  -- CUSA13303 Nora Princess and Stray Cat Heart HD,
     [0xb10] = "JinkiResurrection", -- CUSA25179
-    [0x2e0] = "NoraPrincess2", --CUSA13586 Nora Princess and Stray Cat Heart  2
-    [0x410] = "FuyuKiss", -- CUSA29745
-    [0x560] = "Mikagami",		-- CUSA11481 Mikagami Sumika no Seifuku Katsudou
+	[0x2e0] = "NoraPrincess2", --CUSA13586 Nora Princess and Stray Cat Heart  2
+	[0x410] = "FuyuKiss", -- CUSA29745
+	[0x560] = "Mikagami",		-- CUSA11481 Mikagami Sumika no Seifuku Katsudou
+	[0x170] = "SummerSurprise",
 }
 
 gadget_table = {
@@ -1173,6 +1174,94 @@ gadget_table = {
             Mtx_unlock = 0x219C0,
 
             Atomic_fetch_add_8 = 0xE0C0,
+        }
+    },
+	summer_surprise = {
+        gadgets = {
+            ["ret"] = 0x4c,
+            
+            ["pop rsp; ret"] = 0xa02,
+            ["pop rbp; ret"] = 0x79,
+            ["pop rax; ret"] = 0x9f2,
+            ["pop rbx; ret"] = 0x5d436,
+            ["pop rcx; ret"] = 0x143af,
+            ["pop rdx; ret"] = 0x3d20e7,
+            ["pop rdi; ret"] = 0xcd77e,
+            ["pop rsi; ret"] = 0x10d92d,
+            ["pop r8; ret"] = 0x9f1,
+            ["mov r9, rbx; call [rax + 8]"] = nil,
+            ["pop r13; pop r14; pop r15; ret"] = 0x1150f3,
+            ["mov r9, r13; call [rax + 8]"] = 0x13b504,
+            
+            ["mov [rax + 8], rcx; ret"] = 0x13b48a,
+            ["mov [rax + 0x28], rdx; ret"] = 0x14e21f,
+            ["mov [rcx + 0xa0], rdi; ret"] = 0xd6a8e,
+            ["mov r9, [rax + rsi + 0x18]; xor eax, eax; mov [r8], r9; ret"] = 0x11bea2,
+            ["add rax, r8; ret"] = 0xa083,
+            
+            ["mov [rdi], rsi; ret"] = 0xd6c4f,
+            ["mov [rdi], rax; ret"] = 0x95bbb,
+            ["mov [rdi], eax; ret"] = 0x95bbc,
+            ["add [rbx], eax; ret"] = nil,
+            ["add [rbx], ecx; ret"] = nil,
+            ["add [rbx], edi; ret"] = 0x3eb1d3,
+            ["mov rax, [rax]; ret"] = 0x1fcdb,
+            ["inc dword [rax]; ret"] = 0x1a694b,
+            
+            -- branching specific gadgets
+            ["cmp [rax], ebx; ret"] = 0x3ed708,
+            ["sete al; ret"] = 0x52d27,
+            ["setne al; ret"] = 0x50f,
+            ["seta al; ret"] = 0x16c67e,
+            ["setb al; ret"] = 0x5d4b4,
+            ["setg al; ret"] = nil,
+            ["setl al; ret"] = 0xd103a,
+            ["shl rax, cl; ret"] = 0xdb312,
+            ["add rax, rcx; ret"] = 0x3582e,
+            
+            stack_pivot = {
+                ["mov esp, 0xfb0000bd; ret"] = 0x39b744, -- crash handler
+                ["mov esp, 0xf00000b9; ret"] = 0x3a148c, -- native handler
+            }
+        },
+        eboot_addrofs = {
+            fake_string = 0x600164, -- SCE_RELRO segment, use ptr as size for fake string
+            luaB_auxwrap = 0x1ad170, -- to resolve eboot base
+            longjmp_import = 0x619160, -- to resolve libc base
+            
+            luaL_optinteger = 0x1aaba0,
+            luaL_checklstring = 0x1aa790,
+            lua_pushlstring = 0x1a88b0,
+            lua_pushinteger = 0x1a8890,
+            
+            luaL_newstate = 0x1abab0,
+            luaL_openlibs = 0x1b5b00,
+            lua_setfield = 0x1a9370,
+            luaL_loadstring = 0x1aba40,
+            lua_pcall = 0x1a9a00,
+            lua_pushcclosure = 0x1a8ac0,
+            lua_tolstring = 0x1a7fc0,
+            lua_pushstring = 0x1a8910,
+        },
+        libc_addrofs = {
+            calloc = 0x4e910,
+            memcpy = 0x44150,
+            setjmp = 0xb2d60,
+            longjmp = 0xb2db0,
+            strerror = 0x38340,
+            error = 0x168,
+            sceKernelGetModuleInfoFromAddr = 0x198,
+            gettimeofday_import = 0x11ba78, -- syscall wrapper
+            
+            Thrd_join = 0x4dd20,
+            Thrd_exit = 0x4dda0,
+            Thrd_create = 0x4df20,
+
+            Mtx_init = 0x4e1a0,
+            Mtx_lock = 0x4e230,
+            Mtx_unlock = 0x4e220,
+
+            Atomic_fetch_add_8 = 0x39800,
         }
     },
 }
