@@ -10,10 +10,10 @@ games_identification = {
     [0xd80] = "IxSHETell",
     [0x660] = "NoraPrincess",  -- CUSA13303 Nora Princess and Stray Cat Heart HD,
     [0xb10] = "JinkiResurrection", -- CUSA25179
-	[0x2e0] = "NoraPrincess2", --CUSA13586 Nora Princess and Stray Cat Heart  2
+    [0x2e0] = "NoraPrincess2", --CUSA13586 Nora Princess and Stray Cat Heart  2
     [0x410] = "FuyuKiss", -- CUSA29745
-	[0x560] = "Mikagami",		-- CUSA11481 Mikagami Sumika no Seifuku Katsudou
-	[0x170] = "SummerSurprise",
+    [0x560] = "Mikagami",-- CUSA11481 Mikagami Sumika no Seifuku Katsudou
+    [0x170] = "SummerSurprise",
 }
 
 gadget_table = {
@@ -1075,7 +1075,7 @@ gadget_table = {
             Atomic_fetch_add_8 = 0x37b80,
         }
     },
-	    mikagami = {
+    mikagami = {
         gadgets = {
             ["ret"] = 0x4C,
 
@@ -1169,7 +1169,7 @@ gadget_table = {
             Atomic_fetch_add_8 = 0xE0C0,
         }
     },
-	summer_surprise = {
+    summer_surprise = {
         gadgets = {
             ["ret"] = 0x4c,
             
