@@ -1,6 +1,7 @@
 *top
 
-[save file="saveg.dat"]
+[save file="save9999.dat"]
+
 [lua]
 function include_lua(engine)
 	e = engine

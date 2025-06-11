@@ -83,9 +83,9 @@ function run_lua_code(lua_code)
 end
 
 function get_savedata_path()
-    local path = "/savedata0/"
+    local path = "/savedata0/main_plk/"
     if is_jailbroken() then
-        path = "/mnt/sandbox/" .. get_title_id() .. "_000/savedata0/"
+        path = "/mnt/sandbox/" .. get_title_id() .. "_000/savedata0/main_plk/"
     end
     return path
 end
@@ -102,7 +102,7 @@ function start_elf_loader()
         return
     end
 
-    load_and_run_lua(get_savedata_path() .. "elf_loader.lua")
+    load_and_run_lua(get_savedata_path() .. "main_plk/elf_loader.lua")
     sleep(4000, "ms")
     elf_loader_active = true
 end
@@ -196,7 +196,7 @@ function main()
         return
     end
 
-    load_and_run_lua(get_savedata_path() .. "autoload.lua")
+    load_and_run_lua(get_savedata_path() .. "main_plk/autoload.lua")
 
     send_ps_notification("PS5 Lua Loader finished!\n\nClosing game...")
     syscall.kill(syscall.getpid(), 15)
