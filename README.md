@@ -41,7 +41,7 @@ Currently this loader is compatible with the following games:
 | Fuyu Kiss                             | CUSA29745   |                                                                                 |
 | Fuyu Kiss Demo                        | CUSA29746   | Requires latest firmware to download from PSN                                   |
 | Nora Princess and Crying Cat 2        | CUSA13586   |                                                                                 |
-| Haruoto Alice * Snow Drop             | CUSA14324   |                                                                                 |
+| Haruoto Alice Gram Snow Drop          | CUSA14324   |                                                                                 |
 
 
 ## Credits
