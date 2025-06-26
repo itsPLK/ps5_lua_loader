@@ -1,5 +1,6 @@
 
 FORCE_LAPSE_EXPLOIT = false
+LUA_LOADER_VERSION = "v0.8"
 
 WRITABLE_PATH = "/av_contents/content_tmp/"
 LOG_FILE = WRITABLE_PATH .. "loader_log.txt"
@@ -170,7 +171,7 @@ function main()
 
     kernel_offset = get_kernel_offset()
 
-    send_ps_notification(string.format("PS5 Lua Loader v0.7 \n %s %s", PLATFORM, FW_VERSION))
+    send_ps_notification(string.format("PS5 Lua Loader %s \n %s %s", LUA_LOADER_VERSION, PLATFORM, FW_VERSION))
 
 
     if PLATFORM ~= "ps5" then
