@@ -43,6 +43,10 @@ Currently this loader is compatible with the following games:
 | Nora Princess and Crying Cat 2        | CUSA13586   |                                                                                 |
 | Haruoto Alice Gram Snow Drop          | CUSA14324   |                                                                                 |
 
+## Updating Savedata
+
+If you have the savedata setup and want to update the files, please refer [UPDATE.md](UPDATE.md)
+
 
 ## Credits
 
