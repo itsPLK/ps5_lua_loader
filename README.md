@@ -25,23 +25,25 @@ Supports PS5 firmwares up to 10.01 (above 7.61 uses [lapse exploit](https://gith
 
 Currently this loader is compatible with the following games:
   
-| Game Title                            | TITLE ID    | Notes                                                                           |
-|---------------------------------------|-------------|---------------------------------------------------------------------------------|
-| Raspberry Cube                        | CUSA16074   |                                                                                 |
-| Aibeya                                | CUSA17068   |                                                                                 |
-| Hamidashi Creative                    | CUSA27389   |                                                                                 |
-| Hamidashi Creative Demo               | CUSA27390   | Requires latest firmware to download from PSN                                   |
-| Aikagi Kimi to Issho ni Pack          | CUSA16229   |                                                                                 |
-| Aikagi 2                              | CUSA19556   |                                                                                 |
-| IxSHE Tell                            | CUSA17112   |                                                                                 |
-| IxSHE Tell Demo                       | CUSA17126   | Requires latest firmware to download from PSN                                   |
-| Nora Princess and Stray Cat Heart HD  | CUSA13303   |                                                                                 |
-| Jinki Resurrection                    | CUSA25179   |                                                                                 |
-| Jinki Resurrection Demo               | CUSA25180   | Requires latest firmware to download from PSN                                   |
-| Fuyu Kiss                             | CUSA29745   |                                                                                 |
-| Fuyu Kiss Demo                        | CUSA29746   | Requires latest firmware to download from PSN                                   |
-| Nora Princess and Crying Cat 2        | CUSA13586   |                                                                                 |
-| Haruoto Alice Gram Snow Drop          | CUSA14324   |                                                                                 |
+| Game Title                                     | TITLE ID   | Notes                                            |
+|------------------------------------------------|------------|--------------------------------------------------|
+| Raspberry Cube                                 | CUSA16074  |                                                  |
+| Aibeya                                         | CUSA17068  |                                                  |
+| Hamidashi Creative                             | CUSA27389  |                                                  |
+| Hamidashi Creative Demo                        | CUSA27390  | Requires latest firmware to download from PSN    |
+| Aikagi Kimi to Issho ni Pack                   | CUSA16229  |                                                  |
+| Aikagi 2                                       | CUSA19556  |                                                  |
+| IxSHE Tell                                     | CUSA17112  |                                                  |
+| IxSHE Tell Demo                                | CUSA17126  | Requires latest firmware to download from PSN    |
+| Nora Princess and Stray Cat Heart HD           | CUSA13303  |                                                  |
+| Jinki Resurrection                             | CUSA25179  |                                                  |
+| Jinki Resurrection Demo                        | CUSA25180  | Requires latest firmware to download from PSN    |
+| Fuyu Kiss                                      | CUSA29745  |                                                  |
+| Fuyu Kiss Demo                                 | CUSA29746  | Requires latest firmware to download from PSN    |
+| Nora Princess and Crying Cat 2                 | CUSA13586  |                                                  |
+| Haruoto Alice Gram Snow Drop                   | CUSA14324  |                                                  |
+| Tonari ni Kanojo no Iru Shiawase Winter Guest  | CUSA11977  |                                                  |
+
 
 ## Updating Savedata
 
