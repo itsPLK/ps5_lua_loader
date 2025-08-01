@@ -43,6 +43,7 @@ Currently this loader is compatible with the following games:
 | Nora Princess and Stray Cat Heart HD           | CUSA13303  |
 | Raspberry Cube                                 | CUSA16074  |
 | Tonari ni Kanojo no Iru Shiawase Winter Guest  | CUSA11977  |
+| Mikagami Sumika no Seifuku Katsudou            | CUSA11481  |
 
 **Note**:  Demos require latest firmware to download from PSN
 
