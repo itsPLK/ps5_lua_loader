@@ -2,7 +2,7 @@
 FORCE_LAPSE_EXPLOIT = false
 SHOW_DEBUG_NOTIFICATIONS = true
 
-LUA_LOADER_VERSION = "v0.8"
+LUA_LOADER_VERSION = "v0.8.1"
 
 
 WRITABLE_PATH = "/av_contents/content_tmp/"
