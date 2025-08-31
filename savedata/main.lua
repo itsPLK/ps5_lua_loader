@@ -1,6 +1,9 @@
 
 FORCE_LAPSE_EXPLOIT = false
+SHOW_DEBUG_NOTIFICATIONS = true
+
 LUA_LOADER_VERSION = "v0.8"
+
 
 WRITABLE_PATH = "/av_contents/content_tmp/"
 LOG_FILE = WRITABLE_PATH .. "loader_log.txt"

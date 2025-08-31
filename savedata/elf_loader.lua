@@ -263,7 +263,10 @@ function main()
             errorf("file not exist in any known location")
         end
 
-        send_ps_notification("Loading ELF: \n" .. existing_path)
+        if SHOW_DEBUG_NOTIFICATIONS then
+            send_ps_notification("Loading ELF: \n" .. existing_path)
+        end
+
         printf("loading %s from: %s", elf_filename, existing_path)
 
         local elf = elf_loader:load_from_file(existing_path)

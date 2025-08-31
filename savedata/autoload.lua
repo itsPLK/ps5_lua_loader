@@ -27,7 +27,9 @@ function elf_sender:load_from_file(filepath)
 
     if file_exists(filepath) then
         print("Loading elf from:", filepath)
-        send_ps_notification("Loading elf from: \n" .. filepath)
+        if SHOW_DEBUG_NOTIFICATIONS then
+            send_ps_notification("Loading elf from: \n" .. filepath)
+        end
     else
         print("[-] File not found:", filepath)
         send_ps_notification("[-] File not found: \n" .. filepath)
@@ -113,7 +115,9 @@ function main()
     end
 
     print("Loading autoload config from:", existing_path .. autoload.options.autoload_config)
-    send_ps_notification("Loading autoload config from: \n" .. existing_path .. autoload.options.autoload_config)
+    if SHOW_DEBUG_NOTIFICATIONS then
+        send_ps_notification("Loading autoload config from: \n" .. existing_path .. autoload.options.autoload_config)
+    end
     local config = io.open(existing_path .. autoload.options.autoload_config, "r")
 
     for config_line in config:lines() do
@@ -159,7 +163,9 @@ function main()
             if file_exists(full_path) then
                 -- Load the Lua script and run it
                 print("Loading Lua script from:", full_path)
-                send_ps_notification("Loading lua from: \n" .. full_path)
+                if SHOW_DEBUG_NOTIFICATIONS then
+                    send_ps_notification("Loading lua from: \n" .. full_path)
+                end
                 load_and_run_lua(full_path)
             else
                 print("[ERROR] File not found:", full_path)
