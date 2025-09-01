@@ -92,6 +92,12 @@ end
 
 
 function main()
+    if not is_jailbroken() then
+        send_ps_notification("Not jailbroken. Closing game...")
+        syscall.kill(syscall.getpid(), 15)
+        return
+    end
+
     -- Build possible paths, prioritizing USBs first, then /data, then savedata
     local possible_paths = {}
     for usb = 0, 7 do
@@ -179,6 +185,9 @@ function main()
 
     end
     config:close()
+
+    send_ps_notification("Autoload finished!\n\nClosing game...")
+    syscall.kill(syscall.getpid(), 15)
 end
 
 

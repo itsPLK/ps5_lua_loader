@@ -1,9 +1,15 @@
 
-FORCE_LAPSE_EXPLOIT = false
+FORCE_LAPSE_EXPLOIT = true
 SHOW_DEBUG_NOTIFICATIONS = true
 
-LUA_LOADER_VERSION = "v0.8.1"
+LUA_LOADER_VERSION = "v0.9-BETA (lapse test)"
 
+
+
+options = {
+    enable_signal_handler = true,
+    run_loader_with_gc_disabled = false,
+}
 
 WRITABLE_PATH = "/av_contents/content_tmp/"
 LOG_FILE = WRITABLE_PATH .. "loader_log.txt"
@@ -25,9 +31,9 @@ kernel_offset = nil
 
 old_print = print
 function print(...)
-
+    
     local out = prepare_arguments(...) .. "\n"
-
+    
     old_print(out) -- print to stdout
 
     if client_fd and native_invoke then
@@ -58,7 +64,27 @@ require "kernel_offset"
 require "kernel"
 require "gpu"
 
-function run_lua_code(lua_code)
+
+
+
+
+elf_loader_active = false
+function start_elf_loader()
+    if elf_loader_active then
+        print("elf_loader already loaded")
+        return
+    end
+
+    load_and_run_lua("elf_loader.lua")
+    sleep(4000, "ms")
+    elf_loader_active = true
+end
+
+
+
+function load_and_run_lua(path)
+    local lua_code = file_read(path, "r")
+
     local script, err = loadstring(lua_code)
     if err then
         local err_msg = "error loading script: " .. err
@@ -85,32 +111,227 @@ function run_lua_code(lua_code)
     if err then
         print("Error: " .. err)
     end
+
 end
 
-function get_savedata_path()
-    local path = "/savedata0/"
-    if is_jailbroken() then
-        path = "/mnt/sandbox/" .. get_title_id() .. "_000/savedata0/"
-    end
-    return path
-end
 
-function load_and_run_lua(path)
-    local lua_code = file_read(path, "r")
-    run_lua_code(lua_code)
-end
 
-elf_loader_active = false
-function start_elf_loader()
-    if elf_loader_active then
-        print("elf_loader already loaded")
+function run_lua_code(lua_code)
+
+    assert(client_fd)
+
+    local script, err = loadstring(lua_code)
+    if err then
+        local err_msg = "error loading script: " .. err
+        syscall.write(client_fd, err_msg, #err_msg)
         return
     end
 
-    load_and_run_lua(get_savedata_path() .. "elf_loader.lua")
-    sleep(4000, "ms")
-    elf_loader_active = true
+    local env = {
+        print = function(...)
+            local out = prepare_arguments(...) .. "\n"
+            syscall.write(client_fd, out, #out)
+        end,
+        printf = function(fmt, ...)
+            local out = string.format(fmt, ...) .. "\n"
+            syscall.write(client_fd, out, #out)
+        end
+    }
+
+    setmetatable(env, { __index = _G })
+    setfenv(script, env)
+
+    err = run_with_coroutine(script)
+
+    -- pass error to client
+    if err then
+        syscall.write(client_fd, err, #err)
+    end
+
 end
+
+function remote_lua_loader(port)
+
+    assert(port)
+
+    local enable = memory.alloc(4)
+    local sockaddr_in = memory.alloc(16)
+    local addrlen = memory.alloc(8)
+    local tmp = memory.alloc(8)
+
+    local command_magic = 0xffffffff
+    local maxsize = 500 * 1024  -- 500kb
+    local buf = memory.alloc(maxsize)
+
+    local sock_fd = syscall.socket(AF_INET, SOCK_STREAM, 0):tonumber()
+    if sock_fd < 0 then
+        error("socket() error: " .. get_error_string())
+    end
+
+    memory.write_dword(enable, 1)
+    if syscall.setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR, enable, 4):tonumber() < 0 then
+        error("setsockopt() error: " .. get_error_string())
+    end
+
+    local function htons(port)
+        return bit32.bor(bit32.lshift(port, 8), bit32.rshift(port, 8)) % 0x10000
+    end
+
+    memory.write_byte(sockaddr_in + 1, AF_INET)
+    memory.write_word(sockaddr_in + 2, htons(port))
+    memory.write_dword(sockaddr_in + 4, INADDR_ANY)
+
+    if syscall.bind(sock_fd, sockaddr_in, 16):tonumber() < 0 then
+        error("bind() error: " .. get_error_string())
+    end
+ 
+    if syscall.listen(sock_fd, 3):tonumber() < 0 then
+        error("listen() error: " .. get_error_string())
+    end
+
+    local current_ip = get_current_ip()
+    local network_str = nil
+    
+    if current_ip then
+        network_str = string.format("%s:%d", current_ip, port)
+    else
+        network_str = string.format("port %d", port)
+    end
+
+    --notify(string.format("remote lua loader\nrunning on %s %s\nlistening on %s", PLATFORM, FW_VERSION, network_str))
+
+
+    local fake_client_coroutine = coroutine.create(function()
+        create_fake_client_and_send(kernel_exploit_lua, 9026)
+        create_fake_client_and_send("autoload.lua", 9026)
+    end)
+
+
+    local fake_client_started = false
+    local fake_client_ended = false
+
+    while true do
+
+        print("[+] waiting for new connection...")
+        
+
+        if not fake_client_started then
+            fake_client_started = true
+            coroutine.resume(fake_client_coroutine)
+
+        end
+
+
+
+        memory.write_dword(addrlen, 16)
+
+        client_fd = syscall.accept(sock_fd, sockaddr_in, addrlen):tonumber()  
+        
+        -- need to reinit the socket after rest mode
+        while client_fd < 0 do
+            print("accept() error: " .. get_error_string())
+            
+            syscall.close(sock_fd)
+            
+            sock_fd = syscall.socket(AF_INET, SOCK_STREAM, 0):tonumber()
+            if sock_fd < 0 then
+                error("socket() error: " .. get_error_string())
+            end
+
+            memory.write_dword(enable, 1)
+            if syscall.setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR, enable, 4):tonumber() < 0 then
+                error("setsockopt() error: " .. get_error_string())
+            end
+
+            memory.write_byte(sockaddr_in + 1, AF_INET)
+            memory.write_word(sockaddr_in + 2, htons(port))
+            memory.write_dword(sockaddr_in + 4, INADDR_ANY)
+
+            if syscall.bind(sock_fd, sockaddr_in, 16):tonumber() < 0 then
+                error("bind() error: " .. get_error_string())
+            end
+         
+            if syscall.listen(sock_fd, 3):tonumber() < 0 then
+                error("listen() error: " .. get_error_string())
+            end
+            
+            print("[+] waiting for new connection...")
+            
+            memory.write_dword(addrlen, 16)
+
+            client_fd = syscall.accept(sock_fd, sockaddr_in, addrlen):tonumber()  
+        end
+ 
+        syscall.read(client_fd, tmp, 8)
+        local size = memory.read_qword(tmp):tonumber()
+        
+        -- printf("[+] accepted new connection client fd %d", client_fd)
+
+        if size > 0 and size < maxsize then
+            
+            local cur_size = size
+            local cur_buf = buf
+            
+            while cur_size > 0 do
+                local read_size = syscall.read(client_fd, cur_buf, cur_size):tonumber()
+                if read_size < 0 then
+                    error("read() error: " .. get_error_string())
+                end
+                cur_buf = cur_buf + read_size
+                cur_size = cur_size - read_size
+            end
+            
+            local lua_code = memory.read_buffer(buf, size)
+
+            -- printf("[+] accepted lua code with size %d (%s)", #lua_code, hex(#lua_code))
+            
+            if options.enable_signal_handler then
+                signal.set_sink_fd(client_fd)
+            end
+            run_lua_code(lua_code)
+
+            syscall.close(client_fd)
+
+        elseif size == command_magic then
+            local command_tmp = memory.alloc(4)
+            syscall.read(client_fd, command_tmp, 1)
+            local command = memory.read_dword(command_tmp):tonumber()
+            
+            if command == 0 then
+                signal.clear()
+                options.enable_signal_handler = false
+                local msg = "command: Disabled signal handler"
+                syscall.write(client_fd, msg, #msg)
+            elseif command == 1 then
+                signal.register()
+                options.enable_signal_handler = true
+                local msg = "command: Enabled signal handler"
+                syscall.write(client_fd, msg, #msg)
+            else
+                local err = string.format("error: invalid command %d\n", command)
+                syscall.write(client_fd, err, #err)
+            end
+            
+            syscall.close(client_fd)
+        else
+            local err = string.format("error: lua code exceed maxsize " ..
+                "(given %s maxsize %s)\n", hex(size), hex(maxsize))
+            syscall.write(client_fd, err, #err)
+            syscall.close(client_fd)
+        end
+
+        client_fd = nil
+
+        -- init kernel r/w class if exploit state exists
+        if not kernel.rw_initialized then
+            initialize_kernel_rw()
+        end
+
+    end
+
+    syscall.close(sock_fd)
+end
+
 
 old_error = error
 function error(msg)
@@ -125,6 +346,76 @@ function error(msg)
     send_ps_notification("Error:\n" .. msg)
 
     old_error(msg)
+end
+
+function send_lua_to_localhost(port, lua_file_path)
+    
+    -- Read the lua file
+    local lua_code = file_read(lua_file_path)
+    if not lua_code then
+        error("Failed to read " .. lua_file_path)
+    end
+    
+    -- Create socket
+    local sockfd = syscall.socket(AF_INET, SOCK_STREAM, 0):tonumber()
+    if sockfd < 0 then
+        error("socket creation failed: " .. get_error_string())
+    end
+    
+    -- Setup address
+    local sockaddr = memory.alloc(16)
+    memory.write_byte(sockaddr + 1, AF_INET)        -- sin_family
+    memory.write_word(sockaddr + 2, htons(port))    -- sin_port
+    memory.write_dword(sockaddr + 4, 0x0100007f)    -- 127.0.0.1 in network byte order
+    
+    -- Connect to localhost
+    local connect_result = syscall.connect(sockfd, sockaddr, 16):tonumber()
+    if connect_result < 0 then
+        syscall.close(sockfd)
+        error("connect failed: " .. get_error_string())
+    end
+    
+    -- Send size in little-endian qword
+    local size_buf = memory.alloc(8)
+    local lua_size = #lua_code
+    memory.write_byte(size_buf + 0, bit32.band(lua_size, 0xFF))
+    memory.write_byte(size_buf + 1, bit32.band(bit32.rshift(lua_size, 8), 0xFF))
+    memory.write_byte(size_buf + 2, bit32.band(bit32.rshift(lua_size, 16), 0xFF))
+    memory.write_byte(size_buf + 3, bit32.band(bit32.rshift(lua_size, 24), 0xFF))
+    memory.write_byte(size_buf + 4, 0)
+    memory.write_byte(size_buf + 5, 0)
+    memory.write_byte(size_buf + 6, 0)
+    memory.write_byte(size_buf + 7, 0)
+    
+    syscall.write(sockfd, size_buf, 8)
+    
+    -- Send the lua code
+    local code_buf = memory.alloc(#lua_code)
+    memory.write_buffer(code_buf, lua_code)
+    local bytes_sent = syscall.write(sockfd, code_buf, #lua_code):tonumber()
+    
+    return bytes_sent > 0
+end
+
+
+
+
+function get_savedata_path()
+    local path = "/savedata0/"
+    if is_jailbroken() then
+        path = "/mnt/sandbox/" .. get_title_id() .. "_000/savedata0/"
+    end
+    return path
+end
+
+function htons(port)
+    return bit32.bor(bit32.lshift(port, 8), bit32.rshift(port, 8)) % 0x10000
+end
+
+
+function create_fake_client_and_send(file, port)
+    local file_path = get_savedata_path() .. file
+    send_lua_to_localhost(port, file_path)
 end
 
 
@@ -142,13 +433,14 @@ function main()
 
     print("[+] arbitrary r/w primitives achieved")
 
+    -- resolve required syscalls for remote lua loader
+    -- note: syscall resolved here will also be available in the payloads
     syscall.resolve({
         read = 0x3,
         write = 0x4,
         open = 0x5,
         close = 0x6,
         getuid = 0x18,
-        kill = 0x25,
         accept = 0x1e,
         pipe = 0x2a,
         mprotect = 0x4a,
@@ -159,6 +451,7 @@ function main()
         listen = 0x6a,
         getsockopt = 0x76,
         netgetiflist = 0x7d,
+        shutdown = 134,
         sysctl = 0xca,
         nanosleep = 0xf0,
         sigaction = 0x1a0,
@@ -167,13 +460,21 @@ function main()
         dynlib_load_prx = 0x252,
         dynlib_unload_prx = 0x253,
         is_in_sandbox = 0x249,
+        poll = 209,
+        select = 93,
+        kill = 0x25,
     })
+
+    -- setup signal handler
+    if options.enable_signal_handler then
+        signal.register()
+        print("[+] signal handler registered")
+    end
 
     FW_VERSION = get_version()
 
-    thread.init()
 
-    kernel_offset = get_kernel_offset()
+
 
     send_ps_notification(string.format("PS5 Lua Loader %s \n %s %s", LUA_LOADER_VERSION, PLATFORM, FW_VERSION))
 
@@ -194,18 +495,27 @@ function main()
         return
     end
 
-    load_and_run_lua(get_savedata_path() .. kernel_exploit_lua)
 
-    if not is_jailbroken() then
-        send_ps_notification("Jailbreak failed\nClosing game...")
-        syscall.kill(syscall.getpid(), 15)
-        return
+    thread.init()
+
+    kernel_offset = get_kernel_offset()
+
+    local run_loader = function()
+        local port = 9026
+
+        remote_lua_loader(port)
+
     end
 
-    load_and_run_lua(get_savedata_path() .. "autoload.lua")
+    if options.run_loader_with_gc_disabled then
+        run_nogc(run_loader) -- stable but exhaust memory
+    else
+        run_loader() -- less stable but doesnt exhaust memory
+    end
 
-    send_ps_notification("PS5 Lua Loader finished!\n\nClosing game...")
-    syscall.kill(syscall.getpid(), 15)
+    notify("finished")
+
+    sleep(10000000)
 end
 
 function entry()

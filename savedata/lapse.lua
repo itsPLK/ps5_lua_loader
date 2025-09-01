@@ -882,7 +882,6 @@ function double_free_reqs2(sds)
         end
     end
 
-    send_ps_notification("failed aio double free")
     error("failed aio double free")
 end
 
@@ -1914,8 +1913,6 @@ function post_exploitation_ps5()
 
         printf("we root now? uid: before %d after %d", uid_before, uid_after)
         printf("we escaped now? in sandbox: before %d after %d", in_sandbox_before, in_sandbox_after)
-        send_ps_notification("root before:" .. uid_before .. " after: " .. uid_after .. "\n" ..
-                             "sandbox before:" .. in_sandbox_before .. " after: " .. in_sandbox_after)
     end
 
     local function apply_patches_to_kernel_data(accessor)
@@ -1972,6 +1969,8 @@ function print_info()
     print("lapse exploit\n")
     printf("running on %s %s", PLATFORM, FW_VERSION)
     printf("game @ %s\n", game_name)
+
+    send_ps_notification(string.format("lapse exploit\nrunning on %s %s\ngame @ %s", PLATFORM, FW_VERSION, game_name))
 end
 
 
@@ -2052,7 +2051,7 @@ function kexploit()
 
         print("exploit state is saved into storage")
         print("done!")
-        send_ps_notification("exploit done!")
+        send_ps_notification("lapse exploit done!")
     end)
 
     if err then
