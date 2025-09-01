@@ -875,7 +875,9 @@ function double_free_reqs2(sds)
         syscall.close(sd_conn)
 
         if res then
-            send_ps_notification("won race at attempt " .. i)
+            if SHOW_DEBUG_NOTIFICATIONS then
+                send_ps_notification("won race at attempt " .. i)
+            end
             printf("won race at attempt %d", i)
             syscall.close(sd_listen)
             return res
@@ -1970,7 +1972,9 @@ function print_info()
     printf("running on %s %s", PLATFORM, FW_VERSION)
     printf("game @ %s\n", game_name)
 
-    send_ps_notification(string.format("lapse exploit\nrunning on %s %s\ngame @ %s", PLATFORM, FW_VERSION, game_name))
+    if SHOW_DEBUG_NOTIFICATIONS then
+        send_ps_notification(string.format("lapse exploit\nrunning on %s %s\ngame @ %s", PLATFORM, FW_VERSION, game_name))
+    end
 end
 
 
@@ -2051,7 +2055,9 @@ function kexploit()
 
         print("exploit state is saved into storage")
         print("done!")
-        send_ps_notification("lapse exploit done!")
+        if SHOW_DEBUG_NOTIFICATIONS then
+            send_ps_notification("lapse exploit done!")
+        end
     end)
 
     if err then

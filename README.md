@@ -4,7 +4,7 @@
 Fork of [remote_lua_loader](https://github.com/shahrilnet/remote_lua_loader)
 
 Automatically loads umtx kernel exploit, elfloader, your elf payloads, and Lua scripts.
-Supports PS5 firmwares up to 10.01 (above 7.61 uses [lapse exploit](https://github.com/shahrilnet/remote_lua_loader/blob/main/payloads/lapse.lua), which is currently unstable).
+Supports PS5 firmwares up to 10.01
 
 ## How to use
 * Create a directory named `ps5_lua_loader`.
@@ -39,11 +39,11 @@ Currently this loader is compatible with the following games:
 | IxSHE Tell Demo                                | CUSA17126  |
 | Jinki Resurrection                             | CUSA25179  |
 | Jinki Resurrection Demo                        | CUSA25180  |
+| Mikagami Sumika no Seifuku Katsudou            | CUSA11481  |
 | Nora Princess and Crying Cat 2                 | CUSA13586  |
 | Nora Princess and Stray Cat Heart HD           | CUSA13303  |
 | Raspberry Cube                                 | CUSA16074  |
 | Tonari ni Kanojo no Iru Shiawase Winter Guest  | CUSA11977  |
-| Mikagami Sumika no Seifuku Katsudou            | CUSA11481  |
 
 **Note**:  Demos require latest firmware to download from PSN
 

@@ -5,7 +5,6 @@ SHOW_DEBUG_NOTIFICATIONS = true
 LUA_LOADER_VERSION = "v0.9-BETA (lapse test)"
 
 
-
 options = {
     enable_signal_handler = true,
     run_loader_with_gc_disabled = false,
@@ -65,9 +64,6 @@ require "kernel"
 require "gpu"
 
 
-
-
-
 elf_loader_active = false
 function start_elf_loader()
     if elf_loader_active then
@@ -79,7 +75,6 @@ function start_elf_loader()
     sleep(4000, "ms")
     elf_loader_active = true
 end
-
 
 
 function load_and_run_lua(path)
@@ -111,9 +106,7 @@ function load_and_run_lua(path)
     if err then
         print("Error: " .. err)
     end
-
 end
-
 
 
 function run_lua_code(lua_code)
@@ -200,28 +193,21 @@ function remote_lua_loader(port)
 
     --notify(string.format("remote lua loader\nrunning on %s %s\nlistening on %s", PLATFORM, FW_VERSION, network_str))
 
-
     local fake_client_coroutine = coroutine.create(function()
-        create_fake_client_and_send(kernel_exploit_lua, 9026)
-        create_fake_client_and_send("autoload.lua", 9026)
+        send_lua_to_localhost(9026, kernel_exploit_lua)
+        send_lua_to_localhost(9026, "autoload.lua")
     end)
 
-
     local fake_client_started = false
-    local fake_client_ended = false
 
     while true do
 
         print("[+] waiting for new connection...")
         
-
         if not fake_client_started then
             fake_client_started = true
             coroutine.resume(fake_client_coroutine)
-
         end
-
-
 
         memory.write_dword(addrlen, 16)
 
@@ -326,7 +312,6 @@ function remote_lua_loader(port)
         if not kernel.rw_initialized then
             initialize_kernel_rw()
         end
-
     end
 
     syscall.close(sock_fd)
@@ -348,12 +333,14 @@ function error(msg)
     old_error(msg)
 end
 
-function send_lua_to_localhost(port, lua_file_path)
+function send_lua_to_localhost(port, file)
     
+    local file_path = get_savedata_path() .. file
+
     -- Read the lua file
-    local lua_code = file_read(lua_file_path)
+    local lua_code = file_read(file_path)
     if not lua_code then
-        error("Failed to read " .. lua_file_path)
+        error("Failed to read " .. file_path)
     end
     
     -- Create socket
@@ -397,9 +384,6 @@ function send_lua_to_localhost(port, lua_file_path)
     return bytes_sent > 0
 end
 
-
-
-
 function get_savedata_path()
     local path = "/savedata0/"
     if is_jailbroken() then
@@ -411,13 +395,6 @@ end
 function htons(port)
     return bit32.bor(bit32.lshift(port, 8), bit32.rshift(port, 8)) % 0x10000
 end
-
-
-function create_fake_client_and_send(file, port)
-    local file_path = get_savedata_path() .. file
-    send_lua_to_localhost(port, file_path)
-end
-
 
 function main()
 
@@ -441,6 +418,7 @@ function main()
         open = 0x5,
         close = 0x6,
         getuid = 0x18,
+        kill = 0x25,
         accept = 0x1e,
         pipe = 0x2a,
         mprotect = 0x4a,
@@ -451,7 +429,6 @@ function main()
         listen = 0x6a,
         getsockopt = 0x76,
         netgetiflist = 0x7d,
-        shutdown = 134,
         sysctl = 0xca,
         nanosleep = 0xf0,
         sigaction = 0x1a0,
@@ -460,9 +437,6 @@ function main()
         dynlib_load_prx = 0x252,
         dynlib_unload_prx = 0x253,
         is_in_sandbox = 0x249,
-        poll = 209,
-        select = 93,
-        kill = 0x25,
     })
 
     -- setup signal handler
@@ -473,11 +447,7 @@ function main()
 
     FW_VERSION = get_version()
 
-
-
-
     send_ps_notification(string.format("PS5 Lua Loader %s \n %s %s", LUA_LOADER_VERSION, PLATFORM, FW_VERSION))
-
 
     if PLATFORM ~= "ps5" then
         notify(string.format("This only works on ps5 (current %s %s)", PLATFORM, FW_VERSION))
@@ -495,16 +465,13 @@ function main()
         return
     end
 
-
     thread.init()
 
     kernel_offset = get_kernel_offset()
 
     local run_loader = function()
         local port = 9026
-
         remote_lua_loader(port)
-
     end
 
     if options.run_loader_with_gc_disabled then
