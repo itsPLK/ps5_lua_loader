@@ -2,7 +2,7 @@
 FORCE_LAPSE_EXPLOIT = true
 SHOW_DEBUG_NOTIFICATIONS = true
 
-LUA_LOADER_VERSION = "v0.9-BETA (lapse test)"
+LUA_LOADER_VERSION = "v0.9-BETA3 (lapse test)"
 
 
 options = {
@@ -63,50 +63,8 @@ require "kernel_offset"
 require "kernel"
 require "gpu"
 
+require "elf_loader"
 
-elf_loader_active = false
-function start_elf_loader()
-    if elf_loader_active then
-        print("elf_loader already loaded")
-        return
-    end
-
-    load_and_run_lua("elf_loader.lua")
-    sleep(4000, "ms")
-    elf_loader_active = true
-end
-
-
-function load_and_run_lua(path)
-    local lua_code = file_read(path, "r")
-
-    local script, err = loadstring(lua_code)
-    if err then
-        local err_msg = "error loading script: " .. err
-        print(err_msg)
-        return
-    end
-
-    local env = {
-        print = function(...)
-            local out = prepare_arguments(...) .. "\n"
-            print(out)
-        end,
-        printf = function(fmt, ...)
-            local out = string.format(fmt, ...) .. "\n"
-            print(out)
-        end
-    }
-
-    setmetatable(env, { __index = _G })
-    setfenv(script, env)
-
-    err = run_with_coroutine(script)
-
-    if err then
-        print("Error: " .. err)
-    end
-end
 
 
 function run_lua_code(lua_code)

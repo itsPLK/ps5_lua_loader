@@ -5,13 +5,15 @@
 -- credit to nullptr for porting and specter for the original code
 
 
-options = {
+
+
+elf_loader = {}
+
+elf_loader.options = {
     elf_dirname = "ps5_lua_loader", -- directory where elfldr.elf is located
     elf_filename = "elfldr.elf",
 }
 
-
-elf_loader = {}
 elf_loader.__index = elf_loader
 
 elf_loader.shadow_mapping_addr = uint64(0x920100000)
@@ -225,7 +227,14 @@ function elf_loader:wait_for_elf_to_exit()
 end
 
 
-function main()
+
+function start_elf_loader()
+
+    if elf_loader_active then
+        print("elf_loader already loaded")
+        return
+    end
+
     check_jailbroken()
 
     if PLATFORM ~= "ps5" then
@@ -238,8 +247,8 @@ function main()
     })
 
     run_with_ps5_syscall_enabled(function()
-        local elf_dirname = options.elf_dirname
-        local elf_filename = options.elf_filename
+        local elf_dirname = elf_loader.options.elf_dirname
+        local elf_filename = elf_loader.options.elf_filename
 
         -- Build possible paths, prioritizing USBs first, then /data, then savedata
         local possible_paths = {}
@@ -263,6 +272,8 @@ function main()
             errorf("file not exist in any known location")
         end
 
+        elf_loader_active = true
+
         if SHOW_DEBUG_NOTIFICATIONS then
             send_ps_notification("Loading ELF: \n" .. existing_path)
         end
@@ -277,5 +288,4 @@ function main()
     print("done")
 end
 
-main()
 
