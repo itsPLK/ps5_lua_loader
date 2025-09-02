@@ -20,9 +20,50 @@ syscall.resolve(
     }
 )
 
+
+
+
+
+function load_and_run_lua(path)
+    local lua_code = file_read(path, "r")
+
+    local script, err = loadstring(lua_code)
+    if err then
+        local err_msg = "error loading script: " .. err
+        print(err_msg)
+        return
+    end
+
+    local env = {
+        print = function(...)
+            local out = prepare_arguments(...) .. "\n"
+            print(out)
+        end,
+        printf = function(fmt, ...)
+            local out = string.format(fmt, ...) .. "\n"
+            print(out)
+        end
+    }
+
+    setmetatable(env, { __index = _G })
+    setfenv(script, env)
+
+    err = run_with_coroutine(script)
+
+    if err then
+        print("Error: " .. err)
+    end
+end
+
 function elf_sender:load_from_file(filepath)
     if not elf_loader_active then
         start_elf_loader()
+        sleep(4000, "ms")
+        if not elf_loader_active then
+            print("[-] elf loader not active, cannot send elf")
+            send_ps_notification("[-] elf loader not active, cannot send elf")
+            return
+        end
     end
 
     if file_exists(filepath) then
@@ -92,6 +133,12 @@ end
 
 
 function main()
+    if not is_jailbroken() then
+        send_ps_notification("Jailbreak failed.\nClosing game...")
+        syscall.kill(syscall.getpid(), 15)
+        return
+    end
+
     -- Build possible paths, prioritizing USBs first, then /data, then savedata
     local possible_paths = {}
     for usb = 0, 7 do
@@ -179,6 +226,9 @@ function main()
 
     end
     config:close()
+
+    send_ps_notification("Loader finished!\n\nClosing game...")
+    syscall.kill(syscall.getpid(), 15)
 end
 
 
