@@ -133,7 +133,9 @@ end
 
 
 function main()
-    if not is_jailbroken() then
+    if is_jailbroken() then
+        file_touch(IS_JAILBROKEN_PATH)
+    else
         send_ps_notification("Jailbreak failed.\nClosing game...")
         syscall.kill(syscall.getpid(), 15)
         return
