@@ -27,6 +27,7 @@ Currently this loader is compatible with the following games:
   
 | Game Title                                     | TITLE ID   |
 |------------------------------------------------|------------|
+| Aerial Life                                    | CUSA17122  |
 | Aibeya                                         | CUSA17068  |
 | Aikagi 2                                       | CUSA19556  |
 | Aikagi Kimi to Issho ni Pack                   | CUSA16229  |
