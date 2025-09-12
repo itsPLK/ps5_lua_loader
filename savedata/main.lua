@@ -14,6 +14,8 @@ WRITABLE_PATH = "/av_contents/content_tmp/"
 LOG_FILE = WRITABLE_PATH .. "loader_log.txt"
 log_fd = io.open(LOG_FILE, "w")
 
+IS_JAILBROKEN_PATH = "/system_tmp/system.jailbroken"
+
 game_name = nil
 eboot_base = nil
 libc_base = nil
@@ -427,20 +429,25 @@ function main()
 
     kernel_offset = get_kernel_offset()
 
-    local run_loader = function()
-        local port = 9026
-        remote_lua_loader(port)
-    end
-
-    if options.run_loader_with_gc_disabled then
-        run_nogc(run_loader) -- stable but exhaust memory
+    if file_exists(IS_JAILBROKEN_PATH) then
+        send_ps_notification("System is already jailbroken!\nClosing game...")
+        syscall.kill(syscall.getpid(), 15)
     else
-        run_loader() -- less stable but doesnt exhaust memory
+        local run_loader = function()
+            local port = 9026
+            remote_lua_loader(port)
+        end
+
+        if options.run_loader_with_gc_disabled then
+            run_nogc(run_loader) -- stable but exhaust memory
+        else
+            run_loader() -- less stable but doesnt exhaust memory
+        end
+
+        notify("finished")
+
+        sleep(10000000)
     end
-
-    notify("finished")
-
-    sleep(10000000)
 end
 
 function entry()

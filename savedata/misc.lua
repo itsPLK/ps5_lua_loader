@@ -40,6 +40,11 @@ function file_exists(name)
     end
  end
 
+function file_touch(filename)
+    local fd = io.open(filename, "w")
+    fd:close()
+end
+
 function file_write(filename, data, mode)
     local fd = io.open(filename, mode or "wb")
     fd:write(data)
