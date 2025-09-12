@@ -168,6 +168,8 @@ function main()
     local config = io.open(existing_path .. autoload.options.autoload_config, "r")
 
     for config_line in config:lines() do
+        -- trim spaces + \r\n
+        config_line = config_line:match("^%s*(.-)%s*$")
 
         if config_line == "" or config_line:sub(1, 1) == "#" then
             -- skip empty lines and comments
